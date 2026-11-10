@@ -1,0 +1,7 @@
+name: solar-energy-analytics
+
+channels:
+  - defaults
+
+dependencies:
+  - python=3.12
