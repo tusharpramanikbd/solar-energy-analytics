@@ -1,46 +1,58 @@
+
 import requests
+import pandas as pd
 
-url = "https://archive-api.open-meteo.com/v1/archive"
 
-params = {
-    "latitude": 63.096,
-    "longitude": 21.616,
-    "start_date": "2024-01-01",
-    "end_date": "2024-12-31",
-    "daily": "temperature_2m_mean,cloud_cover_mean,sunshine_duration",
-    "timezone": "UTC"
-}
+def collect_weather():
+    url = "https://archive-api.open-meteo.com/v1/archive"
 
-try:
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
+    params = {
+        "latitude": 63.096,
+        "longitude": 21.616,
+        "start_date": "2024-01-01",
+        "end_date": "2024-12-31",
+        "daily": "temperature_2m_mean,cloud_cover_mean,sunshine_duration",
+        "timezone": "UTC"
+    }
 
-    data = response.json()
+    # Collect weather data from API
+    try:
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        daily = response.json()["daily"]
 
-    daily = data["daily"]
+    except (requests.exceptions.RequestException, ValueError, KeyError) as error:
+        raise RuntimeError(f"Weather data collection failed: {error}") from error
 
-    print("Total Records:", len(daily["time"]))
-
-    print("Date:", daily["time"][0])
-    print("Temperature:", daily["temperature_2m_mean"][0])
-    print("Cloud Cover:", daily["cloud_cover_mean"][0])
-    print("Sunshine Duration:", daily["sunshine_duration"][0])
-
+    # Validate weather data
     fields = ["temperature_2m_mean", "cloud_cover_mean", "sunshine_duration"]
 
-    for field in fields:
-        print(field, len(daily[field]) == len(daily["time"]))
+    if not daily["time"]:
+        raise ValueError("Weather data is empty.")
 
     for field in fields:
-        missing_count = sum(value is None for value in daily[field])
-        print(f"{field}: {missing_count} missing values")
+        if len(daily[field]) != len(daily["time"]):
+            raise ValueError(f"Data length mismatch: {field}")
 
-    sunshine_hours = [round(seconds / 3600, 2) for seconds in daily["sunshine_duration"]]
+        if any(value is None for value in daily[field]):
+            raise ValueError(f"Missing values found: {field}")
 
-    print("Sunshine Hours:", sunshine_hours[0])
+    # Convert sunshine duration from seconds to hours
+    sunshine_hours = [
+        round(seconds / 3600, 2)
+        for seconds in daily["sunshine_duration"]
+    ]
 
-except requests.exceptions.RequestException as error:
-    print(f"API Request Failed: {error}")
+    # Prepare structured DataFrame
+    weather_df = pd.DataFrame({
+        "date": daily["time"],
+        "city": "Vaasa",
+        "temperature_mean_c": daily["temperature_2m_mean"],
+        "cloud_cover_mean_pct": daily["cloud_cover_mean"],
+        "sunshine_hours": sunshine_hours
+    })
 
-except ValueError as error:
-    print(f"Invalid JSON Response: {error}")
+    # Convert date column to datetime format
+    weather_df["date"] = pd.to_datetime(weather_df["date"], format="%Y-%m-%d")
+
+    return weather_df
