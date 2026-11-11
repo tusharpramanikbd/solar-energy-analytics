@@ -57,6 +57,22 @@ def create_solar_table(connection):
     finally:
         cursor.close()
 
+def create_statistics_table(connection):
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS national_solar (
+                year SMALLINT UNSIGNED NOT NULL,
+                country VARCHAR(100) NOT NULL,
+                solar_generation_gwh FLOAT NOT NULL,
+                PRIMARY KEY (country, year)
+            )
+        """)
+
+    finally:
+        cursor.close()
+
 def insert_weather_data(connection, weather_df):
     query = """
         INSERT INTO weather_daily
@@ -109,6 +125,37 @@ def insert_solar_data(connection, solar_df):
             float(row.solar_irradiation_kwh_m2_day)
         )
         for row in solar_df.itertuples(index=False)
+    ]
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.executemany(query, rows)
+        connection.commit()
+
+    except mysql.connector.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        cursor.close()
+
+def insert_statistics_data(connection, statistics_df):
+    query = """
+        INSERT INTO national_solar
+            (year, country, solar_generation_gwh)
+        VALUES (%s, %s, %s) AS incoming
+        ON DUPLICATE KEY UPDATE
+            solar_generation_gwh = incoming.solar_generation_gwh
+    """
+
+    rows = [
+        (
+            int(row.year),
+            row.country,
+            float(row.solar_generation_gwh)
+        )
+        for row in statistics_df.itertuples(index=False)
     ]
 
     cursor = connection.cursor()

@@ -15,44 +15,38 @@ def collect_weather():
         "timezone": "UTC"
     }
 
-    # Collect weather data from API
+    # Collect weather data
     try:
         response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
-        daily = response.json()["daily"]
+        raw_df = pd.DataFrame(response.json()["daily"])
 
     except (requests.exceptions.RequestException, ValueError, KeyError) as error:
         raise RuntimeError(f"Weather data collection failed: {error}") from error
 
-    # Validate weather data
-    fields = ["temperature_2m_mean", "cloud_cover_mean", "sunshine_duration"]
-
-    if not daily["time"]:
-        raise ValueError("Weather data is empty.")
-
-    for field in fields:
-        if len(daily[field]) != len(daily["time"]):
-            raise ValueError(f"Data length mismatch: {field}")
-
-        if any(value is None for value in daily[field]):
-            raise ValueError(f"Missing values found: {field}")
-
-    # Convert sunshine duration from seconds to hours
-    sunshine_hours = [
-        round(seconds / 3600, 2)
-        for seconds in daily["sunshine_duration"]
-    ]
-
     # Prepare structured DataFrame
     weather_df = pd.DataFrame({
-        "date": daily["time"],
+        "date": pd.to_datetime(raw_df["time"], format="%Y-%m-%d"),
         "city": "Vaasa",
-        "temperature_mean_c": daily["temperature_2m_mean"],
-        "cloud_cover_mean_pct": daily["cloud_cover_mean"],
-        "sunshine_hours": sunshine_hours
+        "temperature_mean_c": raw_df["temperature_2m_mean"],
+        "cloud_cover_mean_pct": raw_df["cloud_cover_mean"],
+        "sunshine_hours": (raw_df["sunshine_duration"] / 3600).round(2)
     })
 
-    # Convert date column to datetime format
-    weather_df["date"] = pd.to_datetime(weather_df["date"], format="%Y-%m-%d")
+    # Validate weather data
+    if len(weather_df) != 366:
+        raise ValueError("Unexpected number of weather records.")
+
+    if weather_df.isna().any().any():
+        raise ValueError("Missing values found in weather data.")
+
+    if weather_df["date"].duplicated().any():
+        raise ValueError("Duplicate dates found in weather data.")
+
+    if not weather_df["cloud_cover_mean_pct"].between(0, 100).all():
+        raise ValueError("Invalid cloud cover values.")
+
+    if not weather_df["sunshine_hours"].between(0, 24).all():
+        raise ValueError("Invalid sunshine duration values.")
 
     return weather_df
