@@ -18,6 +18,8 @@ def create_database(connection):
         cursor.execute(
             "CREATE DATABASE IF NOT EXISTS solar_energy_analytics"
         )
+
+        cursor.execute("USE solar_energy_analytics")
     finally:
         cursor.close()
 
@@ -25,8 +27,6 @@ def create_weather_table(connection):
     cursor = connection.cursor()
 
     try:
-        cursor.execute("USE solar_energy_analytics")
-
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS weather_daily (
                 date DATE NOT NULL,
@@ -41,10 +41,25 @@ def create_weather_table(connection):
     finally:
         cursor.close()
 
+def create_solar_table(connection):
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS solar_daily (
+                date DATE NOT NULL,
+                city VARCHAR(100) NOT NULL,
+                solar_irradiation_kwh_m2_day FLOAT NOT NULL,
+                PRIMARY KEY (city, date)
+            )
+        """)
+
+    finally:
+        cursor.close()
 
 def insert_weather_data(connection, weather_df):
     query = """
-        INSERT INTO solar_energy_analytics.weather_daily
+        INSERT INTO weather_daily
             (date, city, temperature_mean_c, cloud_cover_mean_pct, sunshine_hours)
         VALUES (%s, %s, %s, %s, %s) AS incoming
         ON DUPLICATE KEY UPDATE
@@ -62,6 +77,38 @@ def insert_weather_data(connection, weather_df):
             float(row.sunshine_hours)
         )
         for row in weather_df.itertuples(index=False)
+    ]
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.executemany(query, rows)
+        connection.commit()
+
+    except mysql.connector.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        cursor.close()
+
+def insert_solar_data(connection, solar_df):
+    query = """
+        INSERT INTO solar_daily
+            (date, city, solar_irradiation_kwh_m2_day)
+        VALUES (%s, %s, %s) AS incoming
+        ON DUPLICATE KEY UPDATE
+            solar_irradiation_kwh_m2_day =
+                incoming.solar_irradiation_kwh_m2_day
+    """
+
+    rows = [
+        (
+            row.date.date(),
+            row.city,
+            float(row.solar_irradiation_kwh_m2_day)
+        )
+        for row in solar_df.itertuples(index=False)
     ]
 
     cursor = connection.cursor()
