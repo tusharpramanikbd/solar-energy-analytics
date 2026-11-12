@@ -10,3 +10,4 @@ dependencies:
   - mysql-connector-python
   - openpyxl
   - pypdf
+  - matplotlib
