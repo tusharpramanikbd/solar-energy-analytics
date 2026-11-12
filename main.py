@@ -5,6 +5,7 @@ from getpass import getpass
 from src.collect_weather import collect_weather
 from src.collect_solar import collect_solar
 from src.collect_statistics import collect_statistics
+from src.collect_pv_report import collect_pv_report
 
 from src.database import (
     connect_mysql,
@@ -14,7 +15,9 @@ from src.database import (
     create_solar_table,
     insert_solar_data,
     create_statistics_table,
-    insert_statistics_data
+    insert_statistics_data,
+    create_pv_table,
+    insert_pv_data
 )
 
 
@@ -34,6 +37,7 @@ def bootstrap():
         create_weather_table(connection)
         create_solar_table(connection)
         create_statistics_table(connection)
+        create_pv_table(connection)
         print("Database and tables initialized.")
 
         # Step 3: Collect and process weather data
@@ -46,6 +50,9 @@ def bootstrap():
         statistics_df = collect_statistics()
         print(f"Statistics records collected: {len(statistics_df)}")
 
+        pv_df = collect_pv_report()
+        print(f"PV benchmark records collected: {len(pv_df)}")
+
         # Step 4: Store cleaned data
         insert_weather_data(connection, weather_df)
         print("Weather data stored successfully.")
@@ -55,6 +62,9 @@ def bootstrap():
 
         insert_statistics_data(connection, statistics_df)
         print("Statistics data stored successfully.")
+
+        insert_pv_data(connection, pv_df)
+        print("PV benchmark data stored successfully.")
 
         print("Bootstrap completed successfully!")
 

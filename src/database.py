@@ -73,6 +73,25 @@ def create_statistics_table(connection):
     finally:
         cursor.close()
 
+def create_pv_table(connection):
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS pv_benchmarks (
+                country VARCHAR(100) NOT NULL,
+                reference_period VARCHAR(20) NOT NULL,
+                metric VARCHAR(100) NOT NULL,
+                metric_value FLOAT NOT NULL,
+                unit VARCHAR(20) NOT NULL,
+                source_page SMALLINT UNSIGNED NOT NULL,
+                PRIMARY KEY (country, reference_period, metric)
+            )
+        """)
+
+    finally:
+        cursor.close()
+
 def insert_weather_data(connection, weather_df):
     query = """
         INSERT INTO weather_daily
@@ -156,6 +175,42 @@ def insert_statistics_data(connection, statistics_df):
             float(row.solar_generation_gwh)
         )
         for row in statistics_df.itertuples(index=False)
+    ]
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.executemany(query, rows)
+        connection.commit()
+
+    except mysql.connector.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        cursor.close()
+
+def insert_pv_data(connection, pv_df):
+    query = """
+        INSERT INTO pv_benchmarks
+            (country, reference_period, metric, metric_value, unit, source_page)
+        VALUES (%s, %s, %s, %s, %s, %s) AS incoming
+        ON DUPLICATE KEY UPDATE
+            metric_value = incoming.metric_value,
+            unit = incoming.unit,
+            source_page = incoming.source_page
+    """
+
+    rows = [
+        (
+            row.country,
+            row.reference_period,
+            row.metric,
+            float(row.metric_value),
+            row.unit,
+            int(row.source_page)
+        )
+        for row in pv_df.itertuples(index=False)
     ]
 
     cursor = connection.cursor()

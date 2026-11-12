@@ -9,3 +9,4 @@ dependencies:
   - pandas
   - mysql-connector-python
   - openpyxl
+  - pypdf
