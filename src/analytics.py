@@ -74,7 +74,6 @@ def calculate_prediction_mae(prediction_df):
 
     return errors.mean()
 
-
 def calculate_seasonal_irradiation(monthly_df):
     seasonal_df = monthly_df.copy()
 
@@ -95,3 +94,57 @@ def calculate_seasonal_irradiation(monthly_df):
     )
 
     return seasonal_df
+
+def calculate_kpis(df):
+    kpi_df = pd.DataFrame([
+        {
+            "measure": "Average Daily Solar Irradiation",
+            "value": round(df["solar_irradiation_kwh_m2_day"].mean(), 2),
+            "unit": "kWh/m²/day",
+            "target": "Not defined",
+            "source": "NASA POWER",
+            "frequency": "2024 Annual Average"
+        },
+        {
+            "measure": "Average Daily Sunshine Duration",
+            "value": round(df["sunshine_hours"].mean(), 2),
+            "unit": "hours/day",
+            "target": "Not defined",
+            "source": "Open-Meteo",
+            "frequency": "2024 Annual Average"
+        },
+        {
+            "measure": "Average Cloud Cover",
+            "value": round(df["cloud_cover_mean_pct"].mean(), 2),
+            "unit": "%",
+            "target": "Not defined",
+            "source": "Open-Meteo",
+            "frequency": "2024 Annual Average"
+        }
+    ])
+
+    return kpi_df
+
+def calculate_monthly_kpis(df):
+    monthly_df = df.copy()
+
+    monthly_df["month"] = monthly_df["date"].dt.month
+
+    monthly_df = monthly_df.groupby("month", as_index=False).agg(
+        avg_solar_irradiation=("solar_irradiation_kwh_m2_day", "mean"),
+        avg_sunshine_hours=("sunshine_hours", "mean"),
+        avg_cloud_cover=("cloud_cover_mean_pct", "mean")
+    )
+
+    months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ]
+
+    monthly_df["month"] = monthly_df["month"].map(
+        dict(enumerate(months, start=1))
+    )
+
+    return monthly_df
+
+

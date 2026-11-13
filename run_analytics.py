@@ -8,12 +8,15 @@ from src.analytics import (
     calculate_monthly_irradiation,
     calculate_solar_predictions,
     calculate_prediction_mae,
-    calculate_seasonal_irradiation
+    calculate_seasonal_irradiation,
+    calculate_kpis,
+    calculate_monthly_kpis
 )
 
 from src.plots import (
     plot_monthly_irradiation,
-    plot_solar_predictions
+    plot_solar_predictions,
+    plot_monthly_kpis
 )
 
 
@@ -58,6 +61,33 @@ def main():
     )
 
     print("Power BI seasonal data exported successfully.")
+
+    # Step 5: Calculate and export KPIs
+    kpi_df = calculate_kpis(df)
+
+    kpi_table = kpi_df.T
+
+    kpi_table.columns = [
+        "Solar Irradiation",
+        "Sunshine Duration",
+        "Cloud Cover"
+    ]
+
+    kpi_table.index = [
+        "Measure", "Value", "Unit",
+        "Target", "Source", "Frequency"
+    ]
+
+    kpi_table.to_excel(output_dir / "kpi_summary_2024.xlsx")
+
+    print(kpi_df.to_string(index=False))
+    print("KPI summary exported successfully.")
+
+    # Step 6: Generate KPI Visualizations
+    monthly_kpi_df = calculate_monthly_kpis(df)
+    plot_monthly_kpis(monthly_kpi_df)
+
+    print("KPI visualizations generated successfully.")
 
     print("All analytics completed successfully!")
 
