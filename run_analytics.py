@@ -12,13 +12,15 @@ from src.analytics import (
     calculate_seasonal_irradiation,
     calculate_kpis,
     calculate_monthly_kpis,
+    calculate_cloud_irradiation_correlation
 )
 
 from src.plots import (
     plot_monthly_irradiation,
     plot_solar_predictions,
     plot_monthly_kpis,
-    plot_solar_generation_trend
+    plot_solar_generation_trend,
+    plot_cloud_irradiation_correlation
 )
 
 
@@ -98,6 +100,14 @@ def main():
     plot_solar_generation_trend(national_df)
 
     print("Trend Analysis visualization generated successfully.")
+
+    # Step 8: Correlation Analysis
+    correlation = calculate_cloud_irradiation_correlation(df)
+
+    plot_cloud_irradiation_correlation(df, correlation)
+
+    print(f"Cloud Cover vs Solar Irradiation Correlation: {correlation:.4f}")
+    print("Correlation visualization generated successfully.")
 
     print("All analytics completed successfully!")
 

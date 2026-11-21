@@ -175,4 +175,11 @@ def calculate_monthly_kpis(df):
 
     return monthly_df
 
+def calculate_cloud_irradiation_correlation(df):
+    correlation = df["cloud_cover_mean_pct"].corr(
+        df["solar_irradiation_kwh_m2_day"]
+    )
+
+    return correlation
+
 

@@ -155,3 +155,35 @@ def plot_solar_generation_trend(national_df):
 
     fig.savefig(output_dir / "solar_generation_trend.png", dpi=200)
     plt.close(fig)
+
+
+def plot_cloud_irradiation_correlation(df, correlation):
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    sns.regplot(
+        data=df,
+        x="cloud_cover_mean_pct",
+        y="solar_irradiation_kwh_m2_day",
+        scatter_kws={"alpha": 0.5},
+        ax=ax
+    )
+
+    ax.set_title("Cloud Cover vs Solar Irradiation - Vaasa 2024")
+    ax.set_xlabel("Average Daily Cloud Cover (%)")
+    ax.set_ylabel("Daily Solar Irradiation (kWh/m²/day)")
+
+    ax.text(
+        0.97, 0.95,
+        f"Pearson Correlation: {correlation:.4f}",
+        transform=ax.transAxes,
+        ha="right",
+        va="top"
+    )
+
+    fig.tight_layout()
+
+    output_dir = Path(__file__).resolve().parent.parent / "charts"
+    output_dir.mkdir(exist_ok=True)
+
+    fig.savefig(output_dir / "solar_cloud_correlation.png", dpi=200)
+    plt.close(fig)
