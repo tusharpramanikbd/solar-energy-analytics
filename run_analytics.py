@@ -5,18 +5,20 @@ from pathlib import Path
 from src.database import connect_mysql
 from src.analytics import (
     load_analytics_data,
+    load_national_solar_data,
     calculate_monthly_irradiation,
     calculate_solar_predictions,
     calculate_prediction_mae,
     calculate_seasonal_irradiation,
     calculate_kpis,
-    calculate_monthly_kpis
+    calculate_monthly_kpis,
 )
 
 from src.plots import (
     plot_monthly_irradiation,
     plot_solar_predictions,
-    plot_monthly_kpis
+    plot_monthly_kpis,
+    plot_solar_generation_trend
 )
 
 
@@ -29,10 +31,13 @@ def main():
 
     try:
         df = load_analytics_data(connection)
+        national_df = load_national_solar_data(connection)
     finally:
         connection.close()
 
     print(f"Analytics records loaded: {len(df)}")
+    print(f"National solar records loaded: {len(national_df)}")
+    print(national_df)
 
     # Step 2: Descriptive Analytics
     monthly_df = calculate_monthly_irradiation(df)
@@ -88,6 +93,11 @@ def main():
     plot_monthly_kpis(monthly_kpi_df)
 
     print("KPI visualizations generated successfully.")
+
+    # Step 7: Trend Analysis
+    plot_solar_generation_trend(national_df)
+
+    print("Trend Analysis visualization generated successfully.")
 
     print("All analytics completed successfully!")
 

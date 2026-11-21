@@ -34,6 +34,34 @@ def load_analytics_data(connection):
 
     return analytics_df
 
+
+def load_national_solar_data(connection):
+    query = """
+        SELECT
+            year,
+            country,
+            solar_generation_gwh
+        FROM solar_energy_analytics.national_solar
+        WHERE country = %s
+        ORDER BY year
+    """
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(query, ("Finland",))
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+
+    national_df = pd.DataFrame(rows)
+
+    if national_df.empty:
+        raise ValueError("No national solar data found.")
+
+    return national_df
+
+
 def calculate_monthly_irradiation(df):
     monthly_df = df.copy()
 

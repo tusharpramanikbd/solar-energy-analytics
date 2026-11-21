@@ -130,3 +130,28 @@ def plot_monthly_kpis(monthly_df):
     fig.tight_layout()
     fig.savefig(output_dir / "kpi_avg_cloud_cover.png", dpi=200)
     plt.close(fig)
+
+def plot_solar_generation_trend(national_df):
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    sns.lineplot(
+        data=national_df,
+        x="year",
+        y="solar_generation_gwh",
+        marker="o",
+        ax=ax
+    )
+
+    ax.set_title("Solar Electricity Generation Trend in Finland (2020–2024)")
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Solar Electricity Generation (GWh)")
+    ax.set_xticks(national_df["year"])
+    ax.set_ylim(bottom=0)
+
+    fig.tight_layout()
+
+    output_dir = Path(__file__).resolve().parent.parent / "charts"
+    output_dir.mkdir(exist_ok=True)
+
+    fig.savefig(output_dir / "solar_generation_trend.png", dpi=200)
+    plt.close(fig)
