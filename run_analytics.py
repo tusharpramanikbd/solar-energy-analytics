@@ -116,6 +116,29 @@ def main():
     plot_pv_benchmark(benchmark_df)
     print("PV Benchmarking visualization generated successfully.")
 
+
+    # Step 10: Prepare Power BI Dashboard Data
+    powerbi_df = df.copy()
+
+    powerbi_df["month"] = powerbi_df["date"].dt.strftime("%b")
+    powerbi_df["month_number"] = powerbi_df["date"].dt.month
+
+    seasons = {
+        1: "Winter", 2: "Winter", 12: "Winter",
+        3: "Spring", 4: "Spring", 5: "Spring",
+        6: "Summer", 7: "Summer", 8: "Summer",
+        9: "Autumn", 10: "Autumn", 11: "Autumn"
+    }
+
+    powerbi_df["season"] = powerbi_df["month_number"].map(seasons)
+
+    powerbi_df.to_csv(
+        output_dir / "powerbi_dashboard_2024.csv",
+        index=False
+    )
+
+    print("Power BI dashboard data exported successfully.")
+
     print("All analytics completed successfully!")
 
 
