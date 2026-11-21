@@ -187,3 +187,31 @@ def plot_cloud_irradiation_correlation(df, correlation):
 
     fig.savefig(output_dir / "solar_cloud_correlation.png", dpi=200)
     plt.close(fig)
+
+
+def plot_pv_benchmark(benchmark_df):
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    sns.barplot(
+        data=benchmark_df,
+        x="country",
+        y="pv_share_pct",
+        ax=ax
+    )
+
+    ax.set_title("Solar PV Share of Electricity Generation (2024)")
+    ax.set_xlabel("Country")
+    ax.set_ylabel("Solar PV Share (%)")
+    ax.set_ylim(bottom=0)
+
+    for container in ax.containers:
+        ax.bar_label(container, fmt="%.1f%%", padding=3)
+
+    fig.tight_layout()
+
+    output_dir = Path(__file__).resolve().parent.parent / "charts"
+    output_dir.mkdir(exist_ok=True)
+
+    fig.savefig(output_dir / "pv_benchmark_comparison.png", dpi=200)
+    plt.close(fig)
+

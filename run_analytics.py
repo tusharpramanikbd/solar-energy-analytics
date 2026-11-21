@@ -6,13 +6,14 @@ from src.database import connect_mysql
 from src.analytics import (
     load_analytics_data,
     load_national_solar_data,
+    load_pv_benchmark_data,
     calculate_monthly_irradiation,
     calculate_solar_predictions,
     calculate_prediction_mae,
     calculate_seasonal_irradiation,
     calculate_kpis,
     calculate_monthly_kpis,
-    calculate_cloud_irradiation_correlation
+    calculate_cloud_irradiation_correlation,
 )
 
 from src.plots import (
@@ -20,7 +21,8 @@ from src.plots import (
     plot_solar_predictions,
     plot_monthly_kpis,
     plot_solar_generation_trend,
-    plot_cloud_irradiation_correlation
+    plot_cloud_irradiation_correlation,
+    plot_pv_benchmark
 )
 
 
@@ -34,6 +36,7 @@ def main():
     try:
         df = load_analytics_data(connection)
         national_df = load_national_solar_data(connection)
+        benchmark_df = load_pv_benchmark_data(connection)
     finally:
         connection.close()
 
@@ -108,6 +111,10 @@ def main():
 
     print(f"Cloud Cover vs Solar Irradiation Correlation: {correlation:.4f}")
     print("Correlation visualization generated successfully.")
+
+    # Step 9: Benchmarking
+    plot_pv_benchmark(benchmark_df)
+    print("PV Benchmarking visualization generated successfully.")
 
     print("All analytics completed successfully!")
 

@@ -1,4 +1,5 @@
 
+from csv import reader
 import re
 from pathlib import Path
 
@@ -13,7 +14,8 @@ def collect_pv_report():
         / "finland_pv_report_2024.pdf"
     )
 
-    page_text = PdfReader(file_path).pages[30].extract_text()
+    reader = PdfReader(file_path)
+    page_text = reader.pages[30].extract_text()
 
     text = re.sub(r"-\s*\n\s*", "", page_text)
     text = " ".join(text.split())
@@ -55,6 +57,27 @@ def collect_pv_report():
             "unit": unit,
             "source_page": 31
         })
+
+    
+    # Extract Belgium's solar PV share
+    belgium_text = " ".join(reader.pages[12].extract_text().split())
+
+    match = re.search(
+        r"Solar PV represented ([\d.]+)% of the electricity generation mix in 2024",
+        belgium_text
+    )
+
+    if not match:
+        raise ValueError("Belgium PV share not found in PDF.")
+
+    rows.append({
+        "country": "Belgium",
+        "reference_period": "2024",
+        "metric": "pv_electricity_share",
+        "metric_value": float(match.group(1)),
+        "unit": "%",
+        "source_page": 13
+    })
 
     pv_df = pd.DataFrame(rows)
 

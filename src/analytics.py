@@ -62,6 +62,33 @@ def load_national_solar_data(connection):
     return national_df
 
 
+def load_pv_benchmark_data(connection):
+    query = """
+        SELECT
+            country,
+            metric_value AS pv_share_pct
+        FROM solar_energy_analytics.pv_benchmarks
+        WHERE metric = 'pv_electricity_share'
+            AND reference_period = '2024'
+            AND country IN ('Finland', 'Belgium')
+        ORDER BY country
+    """
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+
+    benchmark_df = pd.DataFrame(rows)
+
+    if len(benchmark_df) != 2:
+        raise ValueError("Expected two PV benchmark records.")
+
+    return benchmark_df
+
 def calculate_monthly_irradiation(df):
     monthly_df = df.copy()
 
@@ -181,5 +208,3 @@ def calculate_cloud_irradiation_correlation(df):
     )
 
     return correlation
-
-
