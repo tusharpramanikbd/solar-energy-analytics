@@ -2,7 +2,7 @@
 import requests
 import pandas as pd
 
-
+# Collect and validate daily weather data for Vaasa from the Open-Meteo API.
 def collect_weather():
     url = "https://archive-api.open-meteo.com/v1/archive"
 

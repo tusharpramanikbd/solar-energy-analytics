@@ -1,7 +1,7 @@
 import mysql.connector
 import pandas as pd
 
-
+# Connect to the MySQL server using the configured credentials.
 def connect_mysql():
     connection = mysql.connector.connect(
         host="localhost",
@@ -12,6 +12,7 @@ def connect_mysql():
 
     return connection
 
+# Create and select the solar energy analytics database.
 def create_database(connection):
     cursor = connection.cursor()
 
@@ -24,6 +25,7 @@ def create_database(connection):
     finally:
         cursor.close()
 
+# Create the table for daily weather observations.
 def create_weather_table(connection):
     cursor = connection.cursor()
 
@@ -42,6 +44,7 @@ def create_weather_table(connection):
     finally:
         cursor.close()
 
+# Create the table for daily solar irradiation data.
 def create_solar_table(connection):
     cursor = connection.cursor()
 
@@ -58,6 +61,7 @@ def create_solar_table(connection):
     finally:
         cursor.close()
 
+# Create the table for annual national solar electricity generation.
 def create_statistics_table(connection):
     cursor = connection.cursor()
 
@@ -74,6 +78,7 @@ def create_statistics_table(connection):
     finally:
         cursor.close()
 
+# Create the table for solar PV benchmarking statistics.
 def create_pv_table(connection):
     cursor = connection.cursor()
 
@@ -93,6 +98,7 @@ def create_pv_table(connection):
     finally:
         cursor.close()
 
+# Store or update cleaned daily weather records in MySQL.
 def insert_weather_data(connection, weather_df):
     query = """
         INSERT INTO weather_daily
@@ -128,6 +134,7 @@ def insert_weather_data(connection, weather_df):
     finally:
         cursor.close()
 
+# Store or update cleaned daily solar irradiation records in MySQL.
 def insert_solar_data(connection, solar_df):
     query = """
         INSERT INTO solar_daily
@@ -160,6 +167,7 @@ def insert_solar_data(connection, solar_df):
     finally:
         cursor.close()
 
+# Store or update annual national solar generation records in MySQL.
 def insert_statistics_data(connection, statistics_df):
     query = """
         INSERT INTO national_solar
@@ -191,6 +199,7 @@ def insert_statistics_data(connection, statistics_df):
     finally:
         cursor.close()
 
+# Store or update solar PV benchmarking records in MySQL.
 def insert_pv_data(connection, pv_df):
     query = """
         INSERT INTO pv_benchmarks
@@ -227,6 +236,7 @@ def insert_pv_data(connection, pv_df):
     finally:
         cursor.close()
 
+# Load combined weather and solar irradiation data for Vaasa.
 def load_analytics_data(connection):
     query = """
         SELECT
@@ -260,7 +270,7 @@ def load_analytics_data(connection):
 
     return analytics_df
 
-
+# Load Finland's annual solar electricity generation data for trend analysis.
 def load_national_solar_data(connection):
     query = """
         SELECT
@@ -287,7 +297,7 @@ def load_national_solar_data(connection):
 
     return national_df
 
-
+# Load Finland and Belgium's 2024 solar PV shares for benchmarking.
 def load_pv_benchmark_data(connection):
     query = """
         SELECT

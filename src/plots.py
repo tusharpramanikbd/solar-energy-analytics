@@ -3,7 +3,7 @@ from pathlib import Path
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
+# Visualize monthly solar irradiation in Vaasa for descriptive analysis.
 def plot_monthly_irradiation(monthly_df):
     months = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -33,6 +33,7 @@ def plot_monthly_irradiation(monthly_df):
 
     plt.close()
 
+# Compare actual and predicted solar irradiation for predictive analysis.
 def plot_solar_predictions(prediction_df):
     plt.figure(figsize=(12, 5))
 
@@ -66,6 +67,7 @@ def plot_solar_predictions(prediction_df):
 
     plt.close()
 
+# Visualize the three KPIs: solar irradiation, sunshine duration, and cloud cover.
 def plot_monthly_kpis(monthly_df):
     output_dir = Path(__file__).resolve().parent.parent / "charts"
     output_dir.mkdir(exist_ok=True)
@@ -131,6 +133,7 @@ def plot_monthly_kpis(monthly_df):
     fig.savefig(output_dir / "kpi_avg_cloud_cover.png", dpi=200)
     plt.close(fig)
 
+# Visualize Finland's annual solar electricity generation trend from 2020 to 2024.
 def plot_solar_generation_trend(national_df):
     fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -156,7 +159,7 @@ def plot_solar_generation_trend(national_df):
     fig.savefig(output_dir / "trend_finland_solar_generation_2020_2024.png", dpi=200)
     plt.close(fig)
 
-
+# Visualize the relationship between cloud cover and solar irradiation.
 def plot_cloud_irradiation_correlation(df, correlation):
     fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -188,7 +191,7 @@ def plot_cloud_irradiation_correlation(df, correlation):
     fig.savefig(output_dir / "correlation_cloud_cover_solar_irradiation_2024.png", dpi=200)
     plt.close(fig)
 
-
+# Compare the solar PV electricity generation shares of Finland and Belgium.
 def plot_pv_benchmark(benchmark_df):
     fig, ax = plt.subplots(figsize=(8, 5))
 

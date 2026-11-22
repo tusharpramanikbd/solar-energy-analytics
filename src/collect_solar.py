@@ -2,7 +2,7 @@
 from pathlib import Path
 import pandas as pd
 
-
+# Load and validate daily solar irradiation data from the NASA POWER CSV file.
 def collect_solar():
     file_path = (
         Path(__file__).resolve().parent.parent

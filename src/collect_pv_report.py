@@ -1,12 +1,9 @@
-
-from csv import reader
 import re
 from pathlib import Path
-
 import pandas as pd
 from pypdf import PdfReader
 
-
+# Extract and validate Finland and Belgium's solar PV statistics from the IEA PVPS report.
 def collect_pv_report():
     file_path = (
         Path(__file__).resolve().parent.parent

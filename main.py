@@ -1,6 +1,3 @@
-
-import mysql.connector
-
 from src.collect_weather import collect_weather
 from src.collect_solar import collect_solar
 from src.collect_statistics import collect_statistics
@@ -19,7 +16,7 @@ from src.database import (
     insert_pv_data
 )
 
-
+# Collect external data and store the cleaned records in the MySQL database.
 def bootstrap():
     connection = None
 

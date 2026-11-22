@@ -26,7 +26,7 @@ from src.plots import (
     plot_pv_benchmark
 )
 
-
+# Run all analytics and generate charts, KPI summaries, and Power BI input data.
 def main():
     # Step 1: Establish database connection and load data
     connection = connect_mysql()

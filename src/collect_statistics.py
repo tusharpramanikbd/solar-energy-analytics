@@ -2,7 +2,7 @@
 from pathlib import Path
 import pandas as pd
 
-
+# Load and validate Finland's annual solar electricity generation from the Excel file.
 def collect_statistics():
     file_path = (
         Path(__file__).resolve().parent.parent

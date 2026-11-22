@@ -1,6 +1,7 @@
 
 import pandas as pd
 
+# Calculate monthly solar irradiation totals for descriptive analysis.
 def calculate_monthly_irradiation(df):
     monthly_df = df.copy()
 
@@ -16,6 +17,7 @@ def calculate_monthly_irradiation(df):
 
     return monthly_df
 
+# Predict daily solar irradiation using a 7-day moving average.
 def calculate_solar_predictions(df):
     prediction_df = df[[
         "date",
@@ -33,6 +35,7 @@ def calculate_solar_predictions(df):
 
     return prediction_df
 
+# Evaluate prediction accuracy using Mean Absolute Error (MAE).
 def calculate_prediction_mae(prediction_df):
     errors = (
         prediction_df["solar_irradiation_kwh_m2_day"]
@@ -41,6 +44,7 @@ def calculate_prediction_mae(prediction_df):
 
     return errors.mean()
 
+# Summarize seasonal solar irradiation to support energy planning recommendations.
 def calculate_seasonal_irradiation(monthly_df):
     seasonal_df = monthly_df.copy()
 
@@ -62,6 +66,7 @@ def calculate_seasonal_irradiation(monthly_df):
 
     return seasonal_df
 
+# Calculate the three annual KPIs for solar irradiation, sunshine, and cloud cover.
 def calculate_kpis(df):
     kpi_df = pd.DataFrame([
         {
@@ -92,6 +97,7 @@ def calculate_kpis(df):
 
     return kpi_df
 
+# Calculate monthly averages for the three KPI visualizations.
 def calculate_monthly_kpis(df):
     monthly_df = df.copy()
 
@@ -114,6 +120,7 @@ def calculate_monthly_kpis(df):
 
     return monthly_df
 
+# Calculate the correlation between cloud cover and solar irradiation.
 def calculate_cloud_irradiation_correlation(df):
     correlation = df["cloud_cover_mean_pct"].corr(
         df["solar_irradiation_kwh_m2_day"]
