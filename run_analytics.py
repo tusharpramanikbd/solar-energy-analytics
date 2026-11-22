@@ -64,7 +64,7 @@ def main():
     output_dir.mkdir(exist_ok=True)
 
     seasonal_df.to_csv(
-        output_dir / "seasonal_solar_irradiation_2024.csv",
+        output_dir / "prescriptive_seasonal_solar_irradiation_2024.csv",
         index=False
     )
 

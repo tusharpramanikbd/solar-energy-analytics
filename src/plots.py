@@ -27,7 +27,7 @@ def plot_monthly_irradiation(monthly_df):
     output_dir.mkdir(exist_ok=True)
 
     plt.savefig(
-        output_dir / "monthly_solar_irradiation_2024.png",
+        output_dir / "descriptive_monthly_solar_irradiation_2024.png",
         dpi=200
     )
 
@@ -60,7 +60,7 @@ def plot_solar_predictions(prediction_df):
     output_dir.mkdir(exist_ok=True)
 
     plt.savefig(
-        output_dir / "solar_irradiation_predictions_2024.png",
+        output_dir / "predictive_solar_irradiation_2024.png",
         dpi=200
     )
 
@@ -153,7 +153,7 @@ def plot_solar_generation_trend(national_df):
     output_dir = Path(__file__).resolve().parent.parent / "charts"
     output_dir.mkdir(exist_ok=True)
 
-    fig.savefig(output_dir / "solar_generation_trend.png", dpi=200)
+    fig.savefig(output_dir / "trend_finland_solar_generation_2020_2024.png", dpi=200)
     plt.close(fig)
 
 
@@ -185,7 +185,7 @@ def plot_cloud_irradiation_correlation(df, correlation):
     output_dir = Path(__file__).resolve().parent.parent / "charts"
     output_dir.mkdir(exist_ok=True)
 
-    fig.savefig(output_dir / "solar_cloud_correlation.png", dpi=200)
+    fig.savefig(output_dir / "correlation_cloud_cover_solar_irradiation_2024.png", dpi=200)
     plt.close(fig)
 
 
@@ -212,6 +212,6 @@ def plot_pv_benchmark(benchmark_df):
     output_dir = Path(__file__).resolve().parent.parent / "charts"
     output_dir.mkdir(exist_ok=True)
 
-    fig.savefig(output_dir / "pv_benchmark_comparison.png", dpi=200)
+    fig.savefig(output_dir / "benchmarking_finland_belgium_pv_share_2024.png", dpi=200)
     plt.close(fig)
 
