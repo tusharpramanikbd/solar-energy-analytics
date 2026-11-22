@@ -1,12 +1,13 @@
 import mysql.connector
+import pandas as pd
 
 
-def connect_mysql(user, password, host="127.0.0.1", port=3306):
+def connect_mysql():
     connection = mysql.connector.connect(
-        host=host,
-        port=port,
-        user=user,
-        password=password
+        host="localhost",
+        port=3306,
+        user="root",
+        password="YOUR_MYSQL_PASSWORD" # Replace with your MySQL password
     )
 
     return connection
@@ -225,3 +226,91 @@ def insert_pv_data(connection, pv_df):
 
     finally:
         cursor.close()
+
+def load_analytics_data(connection):
+    query = """
+        SELECT
+            w.date,
+            w.city,
+            w.temperature_mean_c,
+            w.cloud_cover_mean_pct,
+            w.sunshine_hours,
+            s.solar_irradiation_kwh_m2_day
+        FROM solar_energy_analytics.weather_daily AS w
+        INNER JOIN solar_energy_analytics.solar_daily AS s
+            ON w.date = s.date AND w.city = s.city
+        WHERE w.city = %s
+        ORDER BY w.date
+    """
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(query, ("Vaasa",))
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+
+    analytics_df = pd.DataFrame(rows)
+
+    if analytics_df.empty:
+        raise ValueError("No matching analytics data found.")
+
+    analytics_df["date"] = pd.to_datetime(analytics_df["date"])
+
+    return analytics_df
+
+
+def load_national_solar_data(connection):
+    query = """
+        SELECT
+            year,
+            country,
+            solar_generation_gwh
+        FROM solar_energy_analytics.national_solar
+        WHERE country = %s
+        ORDER BY year
+    """
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(query, ("Finland",))
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+
+    national_df = pd.DataFrame(rows)
+
+    if national_df.empty:
+        raise ValueError("No national solar data found.")
+
+    return national_df
+
+
+def load_pv_benchmark_data(connection):
+    query = """
+        SELECT
+            country,
+            metric_value AS pv_share_pct
+        FROM solar_energy_analytics.pv_benchmarks
+        WHERE metric = 'pv_electricity_share'
+            AND reference_period = '2024'
+            AND country IN ('Finland', 'Belgium')
+        ORDER BY country
+    """
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+
+    benchmark_df = pd.DataFrame(rows)
+
+    if len(benchmark_df) != 2:
+        raise ValueError("Expected two PV benchmark records.")
+
+    return benchmark_df

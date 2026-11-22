@@ -1,6 +1,5 @@
 
 import mysql.connector
-from getpass import getpass
 
 from src.collect_weather import collect_weather
 from src.collect_solar import collect_solar
@@ -22,14 +21,11 @@ from src.database import (
 
 
 def bootstrap():
-    user = input("MySQL Username: ")
-    password = getpass("MySQL Password: ")
-
     connection = None
 
     try:
         # Step 1: Connect to MySQL
-        connection = connect_mysql(user, password)
+        connection = connect_mysql()
         print("MySQL connected.")
 
         # Step 2: Initialize database and table

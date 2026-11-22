@@ -1,12 +1,13 @@
-
-from getpass import getpass
 from pathlib import Path
 
-from src.database import connect_mysql
-from src.analytics import (
+from src.database import (
+    connect_mysql,
     load_analytics_data,
     load_national_solar_data,
-    load_pv_benchmark_data,
+    load_pv_benchmark_data
+)
+
+from src.analytics import (
     calculate_monthly_irradiation,
     calculate_solar_predictions,
     calculate_prediction_mae,
@@ -27,11 +28,8 @@ from src.plots import (
 
 
 def main():
-    # Step 1: Load analytics data from MySQL
-    username = input("MySQL Username: ")
-    password = getpass("MySQL Password: ")
-
-    connection = connect_mysql(username, password)
+    # Step 1: Establish database connection and load data
+    connection = connect_mysql()
 
     try:
         df = load_analytics_data(connection)
