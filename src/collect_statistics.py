@@ -6,7 +6,7 @@ import pandas as pd
 def collect_statistics():
     file_path = (
         Path(__file__).resolve().parent.parent
-        / "data"
+        / "external_data"
         / "finland_solar_2020_2024.xlsx"
     )
 

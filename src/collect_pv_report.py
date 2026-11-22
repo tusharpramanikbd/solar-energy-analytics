@@ -10,7 +10,7 @@ from pypdf import PdfReader
 def collect_pv_report():
     file_path = (
         Path(__file__).resolve().parent.parent
-        / "data"
+        / "external_data"
         / "finland_pv_report_2024.pdf"
     )
 

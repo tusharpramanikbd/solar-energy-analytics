@@ -6,7 +6,7 @@ import pandas as pd
 def collect_solar():
     file_path = (
         Path(__file__).resolve().parent.parent
-        / "data"
+        / "external_data"
         / "solar_vaasa_2024.csv"
     )
 
